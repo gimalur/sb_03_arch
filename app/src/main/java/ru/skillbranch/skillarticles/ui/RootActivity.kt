@@ -12,7 +12,10 @@ import androidx.appcompat.widget.Toolbar
 import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
+import ru.skillbranch.skillarticles.databinding.LayoutBottombarBinding
+import ru.skillbranch.skillarticles.databinding.LayoutSubmenuBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
+import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.ArticleState
 import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
 import ru.skillbranch.skillarticles.viewmodels.Notify
@@ -21,14 +24,18 @@ import ru.skillbranch.skillarticles.viewmodels.ViewModelFactory
 class RootActivity : AppCompatActivity() {
 
     private val viewModel: ArticleViewModel by viewModels { ViewModelFactory("0") }
-    private lateinit var vb: ActivityRootBinding
+
+    private val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
+
+    private val vbBottombar: LayoutBottombarBinding
+        get() = vb.bottombar.binding
+    private val vbSubmenu: LayoutSubmenuBinding
+        get() = vb.submenu.binding
 
     private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        vb = ActivityRootBinding.inflate(layoutInflater)
 
         setContentView(vb.root)
         setupToolbar()
@@ -106,23 +113,23 @@ class RootActivity : AppCompatActivity() {
     }
 
     private fun renderUi(data: ArticleState) {
-        vb.bottombar.binding.btnSettings.isChecked = data.isShowMenu
+        vbBottombar.btnSettings.isChecked = data.isShowMenu
         if (data.isShowMenu) vb.submenu.open() else vb.submenu.close()
 
-        vb.bottombar.binding.btnLike.isChecked = data.isLike
-        vb.bottombar.binding.btnBookmark.isChecked = data.isBookmark
+        vbBottombar.btnLike.isChecked = data.isLike
+        vbBottombar.btnBookmark.isChecked = data.isBookmark
 
-        vb.submenu.binding.switchMode.isChecked = data.isDarkMode
+        vbSubmenu.switchMode.isChecked = data.isDarkMode
         delegate.localNightMode = if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 
         if (data.isBigText) {
             vb.tvTextContent.textSize = 18f
-            vb.submenu.binding.btnTextUp.isChecked = true
-            vb.submenu.binding.btnTextDown.isChecked = false
+            vbSubmenu.btnTextUp.isChecked = true
+            vbSubmenu.btnTextDown.isChecked = false
         } else {
             vb.tvTextContent.textSize = 14f
-            vb.submenu.binding.btnTextUp.isChecked = false
-            vb.submenu.binding.btnTextDown.isChecked = true
+            vbSubmenu.btnTextUp.isChecked = false
+            vbSubmenu.btnTextDown.isChecked = true
         }
 
         vb.tvTextContent.text = if (data.isLoadingContent) "Loading..." else data.content.first() as String
@@ -157,16 +164,16 @@ class RootActivity : AppCompatActivity() {
     }
 
     private fun setupBottombar() {
-        vb.bottombar.binding.btnLike.setOnClickListener { viewModel.handleLike() }
-        vb.bottombar.binding.btnBookmark.setOnClickListener { viewModel.handleBookmark() }
-        vb.bottombar.binding.btnShare.setOnClickListener { viewModel.handleShare() }
-        vb.bottombar.binding.btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
+        vbBottombar.btnLike.setOnClickListener { viewModel.handleLike() }
+        vbBottombar.btnBookmark.setOnClickListener { viewModel.handleBookmark() }
+        vbBottombar.btnShare.setOnClickListener { viewModel.handleShare() }
+        vbBottombar.btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
     }
 
     private fun setupSubmenu() {
-        vb.submenu.binding.btnTextUp.setOnClickListener { viewModel.handleUpText() }
-        vb.submenu.binding.btnTextDown.setOnClickListener { viewModel.handleDownText() }
-        vb.submenu.binding.switchMode.setOnClickListener { viewModel.handleNightMode() }
+        vbSubmenu.btnTextUp.setOnClickListener { viewModel.handleUpText() }
+        vbSubmenu.btnTextDown.setOnClickListener { viewModel.handleDownText() }
+        vbSubmenu.switchMode.setOnClickListener { viewModel.handleNightMode() }
     }
 
 }
