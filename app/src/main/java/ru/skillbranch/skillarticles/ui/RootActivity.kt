@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_root.*
 import kotlinx.android.synthetic.main.layout_bottombar.*
@@ -22,7 +22,7 @@ import ru.skillbranch.skillarticles.viewmodels.ViewModelFactory
 
 class RootActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: ArticleViewModel
+    private val viewModel: ArticleViewModel by viewModels { ViewModelFactory("0") }
 
     private lateinit var searchView: SearchView
 
@@ -33,8 +33,6 @@ class RootActivity : AppCompatActivity() {
         setupBottombar()
         setupSubmenu()
 
-        val vmFactory = ViewModelFactory("0")
-        viewModel = ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
         viewModel.observeState(this) {
             renderUi(it)
             setupToolbar()
